@@ -1,35 +1,20 @@
 const express = require('express');
+const bodyParser = require('body-parser')
+const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
-const Schema = mongoose.Schema;
 
-const taskSchema = new Schema ({
-    text: String,
-    isCheck: Boolean
-});
+
+const apiRoutes = require('./src/modules/routes/routes');
+
+app.use(cors());
 
 const url = 'mongodb+srv://dbUser:dbUserPass@firstcluster.as11g.mongodb.net/<dbUserDB>?retryWrites=true&w=majority'
 mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
 
-const Task = mongoose.model('tasks', taskSchema);
-
-app.get('/', (req,res) => {
-    const task = new Task({
-        text: 'First task',
-        isCheck: false
-    })
-    task.save().then(result => {
-        res.send(result);
-    })
-    
-});
-
-app.get('/paramRequest', (req, res) => {
-    Task.find().then(result => {
-        res.send({data: result})
-    })
-})
+app.use(bodyParser.json());
+app.use('/', apiRoutes);
 
 app.listen(8000, () => {
-
-})
+    console.log('complete!');
+});
